@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      @font-face {
+        font-family: "IranYekan";
+        src: url("./assets/fonts/iranyekanwebregular.woff") format("woff2");
+        font-style: normal;
+        font-weight: 400;
+      }
+
+      .prevent-select {
+        -webkit-user-select: none; /* Safari */
+        -ms-user-select: none; /* IE 10 and IE 11 */
+        user-select: none; /* Standard syntax */
+      }
+
+      body {
+        font-family: "IranYekan", system-ui, -apple-system, sans-serif;
+        direction: rtl;
+      }
+
+      .table-container {
+        margin: 20px;
+        overflow-x: auto;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        border: 1px solid #ddd;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        position: relative;
+        text-align: right;
+      }
+
+      th {
+        background-color: #f5f5f5;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      th:hover {
+        background-color: #edecec;
+      }
+
+      .resizer {
+        position: absolute;
+        left: 0; /* Changed from right to left for RTL */
+        top: 0;
+        height: 100%;
+        width: 5px;
+        background: rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        cursor: col-resize;
+        user-select: none;
+      }
+
+      .resizer:hover {
+        background: rgba(0, 0, 0, 0.3);
+        opacity: 1;
+      }
+
+      .resizing {
+        cursor: col-resize;
+        user-select: none;
+      }
+
+      /* Persian number class */
+      .persian-number {
+        direction: ltr;
+        display: inline-block;
+      }
+
+      /* Dragging styles */
+      .dragging {
+        opacity: 0.5;
+        background-color: #e0e0e0;
+      }
+
+      th.drag-over::after {
+        position: absolute;
+        content: "";
+        /* border-left: 2px solid #2196f3; */
+        width: 100%;
+        height: 100%;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.122);
+      }
+
+      .persian-number {
+        direction: ltr;
+        display: inline-block;
+      }
+
+      /* Handle styles */
+      .handle {
+        cursor: move;
+        padding: 4px;
+        margin-left: 4px;
+        color: #666;
+        display: inline-block;
+      }
+
+      .handle:hover {
+        color: #000;
+      }
+
+      /* Sort indicators */
+      .sort-icon {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        margin-right: 6px;
+        position: relative;
+        cursor: pointer;
+      }
+
+      .sort-icon::after {
+        content: "↕️";
+        position: absolute;
+        right: 0;
+        color: #999;
+      }
+
+      th[data-sort="asc"] .sort-icon::after {
+        content: "↑";
+        color: #2196f3;
+      }
+
+      th[data-sort="desc"] .sort-icon::after {
+        content: "↓";
+        color: #2196f3;
+      }
+
+      /* Add spacing between handle and sort icon */
+      .header-content {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="table-container">
+      <table id="resizable-table">
+        <thead>
+          <tr>
+            <th data-col="0" data-sort="none">
+              <span class="handle">⋮⋮</span>نام
+              <div class="resizer"></div>
+              <span class="sort-icon"></span>
+            </th>
+            <th data-col="1" class="" data-sort="none">
+              <span class="handle">⋮⋮</span>سن
+              <div class="resizer"></div>
+              <span class="sort-icon" lang="en"></span>
+            </th>
+            <th data-col="2" data-sort="none">
+              <span class="handle">⋮⋮</span>شهر
+              <div class="resizer"></div>
+              <span class="sort-icon"></span>
+            </th>
+            <th data-col="3" class="" data-sort="none">
+              <span class="handle">⋮⋮</span>کشور
+              <div class="resizer"></div>
+              <span class="sort-icon"></span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>علی محمدی</td>
+            <td><span class="persian-number">۳۰</span></td>
+            <td>تهران</td>
+            <td>ایران</td>
+          </tr>
+          <tr>
+            <td>اریم حسینی</td>
+            <td><span class="persian-number">۲۵</span></td>
+            <td>اصفهان</td>
+            <td>ایران</td>
+          </tr>
+          <tr>
+            <td>بضا کریمی</td>
+            <td><span class="persian-number">۳۵</span></td>
+            <td>شیراز</td>
+            <td>ایران</td>
+          </tr>
+          <tr>
+            <td>پلی محمدی</td>
+            <td><span class="persian-number">۳۰</span></td>
+            <td>تهران</td>
+            <td>ایران</td>
+          </tr>
+          <tr>
+            <td>علی محمدی</td>
+            <td><span class="persian-number">۳۰</span></td>
+            <td>تهران</td>
+            <td>ایران</td>
+          </tr>
+          <tr>
+            <td>علی محمدی</td>
+            <td><span class="persian-number">۳۰</span></td>
+            <td>تهران</td>
+            <td>ایران</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <script>
+      // Convert Persian numbers to English for sorting
+      function convertPersianToEnglish(str) {
+        const persianNumbers = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
+        return str.replace(/[۰-۹]/g, d => persianNumbers.indexOf(d));
+      }
+
+      function sortingHandler(e) {
+        const table = document.getElementById("resizable-table");
+        const headers = table.querySelectorAll("th");
+
+        // Ignore click if it's on handle or resizer
+        if (e.target.classList.contains("handle") || e.target.classList.contains("resizer")) {
+          return;
+        }
+
+        const currentSort = header.getAttribute("data-sort");
+
+        // Reset all other headers
+        headers.forEach(h => {
+          if (h !== header) h.setAttribute("data-sort", "none");
+        });
+
+        // Cycle through sort states
+        let newSort;
+        switch (currentSort) {
+          case "none":
+            newSort = "asc";
+            break;
+          case "asc":
+            newSort = "desc";
+            break;
+          case "desc":
+            newSort = "none";
+            break;
+        }
+
+        header.setAttribute("data-sort", newSort);
+
+        // Get table data and sort
+        const tbody = table.querySelector("tbody");
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+
+        if (newSort !== "none") {
+          rows.sort((a, b) => {
+            let aVal = a.cells[index].textContent.trim();
+            let bVal = b.cells[index].textContent.trim();
+
+            // Convert Persian numbers for comparison if needed
+            if (a.cells[index].querySelector(".persian-number")) {
+              aVal = convertPersianToEnglish(aVal);
+              bVal = convertPersianToEnglish(bVal);
+              aVal = parseInt(aVal);
+              bVal = parseInt(bVal);
+            }
+
+            console.log(typeof aVal, typeof bVal);
+
+            if (newSort === "asc") {
+              return bVal.toString().localeCompare(aVal.toString(), "fa");
+            } else {
+              return aVal.toString().localeCompare(bVal.toString(), "fa");
+            }
+          });
+        } else {
+          // Reset to original order based on DOM position
+          rows.sort((a, b) => {
+            return Array.from(tbody.children).indexOf(a) - Array.from(tbody.children).indexOf(b);
+          });
+        }
+
+        // Reorder the table
+        rows.forEach(row => tbody.appendChild(row));
+      }
+
+      function createTable() {
+        const table = document.getElementById("resizable-table");
+        const headers = table.querySelectorAll("th");
+        let draggingCol = null;
+        let startX, startWidth;
+        let draggedHeader = null;
+
+        // Column resizing functionality
+        headers.forEach((header, index) => {
+          header.addEventListener("click", sortingHandler);
+
+          header.style.width = `${header.offsetWidth}px`;
+
+          const resizer = header.querySelector(".resizer");
+          if (resizer) {
+            resizer.addEventListener("mousedown", function (e) {
+              e.stopPropagation(); // Prevent drag start
+              draggingCol = header;
+              startX = e.pageX;
+              startWidth = header.offsetWidth;
+
+              document.addEventListener("mousemove", onResize);
+              document.addEventListener("mouseup", stopResize);
+
+              table.classList.add("resizing");
+            });
+          }
+
+          // Column moving functionality
+          const handle = header.querySelector(".handle");
+          handle.addEventListener("mousedown", function (e) {
+            draggedHeader = header;
+            header.classList.add("dragging");
+
+            document.querySelector("table").classList.add("prevent-select");
+
+            document.addEventListener("mousemove", onMove);
+            document.addEventListener("mouseup", stopMove);
+          });
+        });
+
+        function onResize(e) {
+          if (draggingCol) {
+            const diffX = startX - e.pageX;
+            draggingCol.style.width = `${startWidth + diffX}px`;
+          }
+        }
+
+        function stopResize() {
+          draggingCol = null;
+          table.classList.remove("resizing");
+          document.removeEventListener("mousemove", onResize);
+          document.removeEventListener("mouseup", stopResize);
+        }
+
+        function onMove(e) {
+          e.preventDefault();
+          headers.forEach(header => {
+            if (header !== draggedHeader) {
+              const rect = header.getBoundingClientRect();
+
+              const min = rect.x;
+              const max = rect.x + rect.width;
+
+              header.classList.toggle("drag-over", e.clientX < max && e.clientX > min);
+            }
+          });
+        }
+
+        function stopMove() {
+          document.querySelector("table").classList.remove("prevent-select");
+
+          if (draggedHeader) {
+            const dragOverHeader = table.querySelector("th.drag-over");
+            if (dragOverHeader) {
+              const draggedIndex = parseInt(draggedHeader.dataset.col);
+              const dropIndex = parseInt(dragOverHeader.dataset.col);
+
+              // Swap columns in the table
+              const rows = table.querySelectorAll("tr");
+              rows.forEach(row => {
+                const cells = row.children;
+                const draggedCell = cells[draggedIndex];
+                const dropCell = cells[dropIndex];
+
+                // Update data-col attributes
+                if (row.parentElement.tagName === "THEAD") {
+                  draggedCell.dataset.col = dropIndex;
+                  dropCell.dataset.col = draggedIndex;
+                }
+
+                // Perform the swap
+                if (draggedIndex < dropIndex) {
+                  row.insertBefore(draggedCell, dropCell.nextSibling);
+                } else {
+                  row.insertBefore(draggedCell, dropCell);
+                }
+              });
+            }
+
+            draggedHeader.classList.remove("dragging");
+            headers.forEach(header => header.classList.remove("drag-over"));
+            draggedHeader = null;
+          }
+
+          document.removeEventListener("mousemove", onMove);
+          document.removeEventListener("mouseup", stopMove);
+
+          const headers = table.querySelectorAll("th");
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        createTable();
+      });
+    </script>
+  </body>
+</html>
