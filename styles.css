@@ -1,0 +1,350 @@
+@font-face {
+  font-family: "IranYekan";
+  src: url("./assets/fonts/iranyekanwebregular.woff") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+}
+
+.prevent-select {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
+body {
+  font-family: "IranYekan", system-ui, -apple-system, sans-serif;
+  direction: rtl;
+  padding: 0;
+  margin: 0;
+  height: 100dvh;
+  overflow-y: visible !important;
+}
+
+.table-container {
+  margin: 20px;
+  /* overflow-x: auto; */
+  overflow-y: visible !important;
+  position: relative; /* Add this */
+  /* height: 100%; */
+}
+
+/* Update table styles */
+table {
+  border-collapse: collapse;
+  width: fit-content;
+  max-width: none;
+  border: 1px solid #ddd;
+  table-layout: fixed;
+  position: relative;
+  overflow-y: visible !important;
+}
+
+th {
+  overflow-y: visible !important;
+  border: 1px solid #ddd;
+  padding: 8px;
+  position: relative;
+  text-align: right;
+  background-color: #f5f5f5;
+  font-weight: bold;
+  cursor: pointer;
+  min-width: 150px;
+  width: 150px;
+  white-space: nowrap; /* Prevent text wrapping */
+  text-overflow: ellipsis;
+}
+
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  position: relative;
+  text-align: right;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: fit-content;
+  overflow-y: visible !important;
+}
+
+th:hover {
+  background-color: #edecec;
+}
+
+.resizer {
+  position: absolute;
+  left: 0; /* Changed from right to left for RTL */
+  top: 0;
+  height: 100%;
+  width: 5px;
+  background: rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  cursor: col-resize;
+  user-select: none;
+}
+
+.resizer:hover {
+  background: rgba(0, 0, 0, 0.3);
+  opacity: 1;
+}
+
+.resizing {
+  cursor: col-resize;
+  user-select: none;
+}
+
+/* Persian number class */
+.persian-number {
+  direction: ltr;
+  display: inline-block;
+}
+
+/* Dragging styles */
+.dragging {
+  opacity: 0.5;
+  background-color: #e0e0e0;
+}
+
+th.drag-over::after {
+  position: absolute;
+  content: "";
+  /* border-left: 2px solid #2196f3; */
+  width: 100%;
+  height: 100%;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.122);
+}
+
+/* Handle styles */
+.handle {
+  cursor: move;
+  padding: 4px;
+  margin-left: 4px;
+  color: #666;
+  display: inline-block;
+}
+
+.handle:hover {
+  color: #000;
+}
+
+/* Sort indicators */
+.sort-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  position: relative;
+  cursor: pointer;
+}
+
+.sort-icon::after {
+  content: "↕️";
+  position: absolute;
+  inset: 0;
+  margin-top: -2.5px;
+  color: #999;
+}
+
+th[data-sort="asc"] .sort-icon::after {
+  content: "↑";
+  color: #2196f3;
+}
+
+th[data-sort="desc"] .sort-icon::after {
+  content: "↓";
+  color: #2196f3;
+}
+
+/* Add spacing between handle and sort icon */
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Add new styles for menu */
+.column-menu-button {
+  padding: 2px 6px;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  cursor: pointer;
+  position: absolute;
+  height: fit-content;
+  left: 12px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.column-menu {
+  position: absolute;
+  top: calc(100% - 12px);
+  left: 12px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  display: none;
+  z-index: 1000;
+  min-width: 150px;
+}
+
+.column-menu.show {
+  display: block;
+  z-index: 1000;
+}
+
+.menu-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.menu-item:hover {
+  background: #f5f5f5;
+}
+
+.menu-separator {
+  border-top: 1px solid #ddd;
+  margin: 4px 0;
+}
+
+.hidden-column {
+  display: none;
+}
+
+.menu-item.show-columns {
+  position: relative;
+}
+
+.submenu {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  display: none;
+  min-width: 150px;
+  z-index: 1001; /* Higher than parent menu */
+}
+
+.menu-item.show-columns:hover .submenu {
+  display: block;
+  z-index: 1001;
+}
+
+.checkbox-item {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.checkbox-item:hover {
+  background: #f5f5f5;
+}
+
+.checkbox-item input {
+  margin-left: 8px;
+}
+
+/* Filtering */
+
+.filter-container {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  flex-direction: column;
+}
+
+.filter-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.filter-input {
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: inherit;
+  flex: 1;
+}
+
+.filter-select {
+  padding: 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: inherit;
+  min-width: 120px;
+  width: 100%;
+}
+
+.menu-item.filter-column {
+  padding: 0;
+}
+
+.apply-filter {
+  background: #2196f3;
+  color: white;
+  border: none;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.apply-filter:hover {
+  background: #1976d2;
+}
+
+.clear-filter {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.clear-filter:hover {
+  background: #d32f2f;
+}
+
+.clear-all-filters {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  margin: 8px 20px;
+  display: none;
+}
+
+.clear-all-filters.visible {
+  display: block;
+}
+
+.filter-badge {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  margin-right: 8px;
+  display: none;
+  cursor: pointer;
+}
+
+.button-group {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
