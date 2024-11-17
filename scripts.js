@@ -1,6 +1,6 @@
 function convertPersianToEnglish(str) {
   const persianNumbers = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
-  return str.replace(/[۰-۹]/g, d => persianNumbers.indexOf(d));
+  return str.replace(/[۰-۹]/g, (d) => persianNumbers.indexOf(d));
 }
 
 function createTable() {
@@ -13,21 +13,25 @@ function createTable() {
   const COLUMN_ORDER_KEY = "tableColumnOrder";
 
   // Load column order from localStorage or initialize default order
-  let columnOrder = JSON.parse(localStorage.getItem(COLUMN_ORDER_KEY)) || Array.from(headers).map((_, index) => index);
+  let columnOrder =
+    JSON.parse(localStorage.getItem(COLUMN_ORDER_KEY)) ||
+    Array.from(headers).map((_, index) => index);
 
   // Apply initial column order
   function applyColumnOrder() {
     const rows = table.querySelectorAll("tr");
-    rows.forEach(row => {
+    rows.forEach((row) => {
       const cells = Array.from(row.children);
-      const reorderedCells = columnOrder.map(index => cells[index]);
+      const reorderedCells = columnOrder.map((index) => cells[index]);
       row.innerHTML = "";
-      reorderedCells.forEach(cell => row.appendChild(cell));
+      reorderedCells.forEach((cell) => row.appendChild(cell));
     });
   }
-  // Call this on initial load
+
+  // Load columns order from localStorage
   applyColumnOrder();
 
+  // Sorting function
   function sortingHandler(e, header) {
     // Ignore click if it's on handle or resizer
     if (
@@ -40,12 +44,14 @@ function createTable() {
     }
 
     // Get the current column index based on DOM position
-    const currentIndex = Array.from(header.parentElement.children).indexOf(header);
+    const currentIndex = Array.from(header.parentElement.children).indexOf(
+      header
+    );
 
     const currentSort = header.getAttribute("data-sort");
 
     // Reset all other headers
-    headers.forEach(h => {
+    headers.forEach((h) => {
       if (h !== header) h.setAttribute("data-sort", "none");
     });
 
@@ -93,25 +99,37 @@ function createTable() {
     } else {
       // Reset to original order based on DOM position
       rows.sort((a, b) => {
-        return Array.from(tbody.children).indexOf(a) - Array.from(tbody.children).indexOf(b);
+        return (
+          Array.from(tbody.children).indexOf(a) -
+          Array.from(tbody.children).indexOf(b)
+        );
       });
     }
 
     // Reorder the table
-    rows.forEach(row => tbody.appendChild(row));
+    rows.forEach((row) => tbody.appendChild(row));
   }
 
   // Column resizing functionality
-  headers.forEach(header => {
-    header.addEventListener("click", e => {
+  headers.forEach((header) => {
+    // Sorting event
+    header.addEventListener("click", (e) => {
       sortingHandler(e, header);
     });
 
+    // Set default width for columns
     header.style.width = `${header.offsetWidth}px`;
 
+    // Resizing logic
     const resizer = header.querySelector(".resizer");
     if (resizer) {
       resizer.addEventListener("mousedown", function (e) {
+        headers.forEach((header) => {
+          header.style.width = `${header.offsetWidth - 20}px`;
+        });
+
+        table.style.width = "fit-content";
+
         e.stopPropagation();
         e.preventDefault();
         draggingCol = header;
@@ -167,13 +185,16 @@ function createTable() {
 
   function onMove(e) {
     e.preventDefault();
-    headers.forEach(header => {
+    headers.forEach((header) => {
       if (header !== draggedHeader) {
         const rect = header.getBoundingClientRect();
         const min = rect.x;
         const max = rect.x + rect.width;
 
-        header.classList.toggle("drag-over", e.clientX < max && e.clientX > min);
+        header.classList.toggle(
+          "drag-over",
+          e.clientX < max && e.clientX > min
+        );
       }
     });
   }
@@ -184,8 +205,12 @@ function createTable() {
     if (draggedHeader) {
       const dragOverHeader = table.querySelector("th.drag-over");
       if (dragOverHeader) {
-        const draggedIndex = Array.from(draggedHeader.parentElement.children).indexOf(draggedHeader);
-        const dropIndex = Array.from(dragOverHeader.parentElement.children).indexOf(dragOverHeader);
+        const draggedIndex = Array.from(
+          draggedHeader.parentElement.children
+        ).indexOf(draggedHeader);
+        const dropIndex = Array.from(
+          dragOverHeader.parentElement.children
+        ).indexOf(dragOverHeader);
 
         // Update column order array
         const [removed] = columnOrder.splice(draggedIndex, 1);
@@ -196,7 +221,7 @@ function createTable() {
 
         // Swap columns in the table
         const rows = table.querySelectorAll("tr");
-        rows.forEach(row => {
+        rows.forEach((row) => {
           const cells = row.children;
           const draggedCell = cells[draggedIndex];
 
@@ -209,7 +234,7 @@ function createTable() {
       }
 
       draggedHeader.classList.remove("dragging");
-      headers.forEach(header => header.classList.remove("drag-over"));
+      headers.forEach((header) => header.classList.remove("drag-over"));
       draggedHeader = null;
     }
 
@@ -268,8 +293,12 @@ function createTable() {
     const savedStates = loadVisibilityStates();
 
     Array.from(headers).forEach((header, index) => {
-      const columnName = header.querySelector(".header-content span:nth-child(2)")?.textContent;
-      const isVisible = savedStates.hasOwnProperty(columnName) ? savedStates[columnName] : true;
+      const columnName = header.querySelector(
+        ".header-content span:nth-child(2)"
+      )?.textContent;
+      const isVisible = savedStates.hasOwnProperty(columnName)
+        ? savedStates[columnName]
+        : true;
 
       columnStates.set(index, {
         name: columnName,
@@ -284,7 +313,9 @@ function createTable() {
 
   function updateSubmenu(submenu) {
     submenu.innerHTML = "";
-    const sortedStates = Array.from(columnStates.entries()).sort((a, b) => a[1].originalIndex - b[1].originalIndex);
+    const sortedStates = Array.from(columnStates.entries()).sort(
+      (a, b) => a[1].originalIndex - b[1].originalIndex
+    );
 
     sortedStates.forEach(([index, state]) => {
       const item = document.createElement("div");
@@ -317,7 +348,7 @@ function createTable() {
 
   function updateAllSubmenus() {
     const allSubmenus = table.querySelectorAll(".submenu");
-    allSubmenus.forEach(submenu => {
+    allSubmenus.forEach((submenu) => {
       updateSubmenu(submenu);
     });
   }
@@ -349,7 +380,7 @@ function createTable() {
     });
 
     const rows = table.querySelectorAll("tbody tr");
-    rows.forEach(row => {
+    rows.forEach((row) => {
       Array.from(row.cells).forEach((cell, index) => {
         const state = columnStates.get(index);
         if (state) {
@@ -366,9 +397,9 @@ function createTable() {
   function initializeMenus() {
     const menuButtons = table.querySelectorAll(".column-menu-button");
 
-    document.addEventListener("click", e => {
+    document.addEventListener("click", (e) => {
       if (!e.target.closest(".column-menu-button")) {
-        table.querySelectorAll(".column-menu.show").forEach(menu => {
+        table.querySelectorAll(".column-menu.show").forEach((menu) => {
           menu.classList.remove("show");
         });
       }
@@ -377,18 +408,18 @@ function createTable() {
     menuButtons.forEach((button, index) => {
       const menu = button.nextElementSibling;
 
-      button.addEventListener("click", e => {
+      button.addEventListener("click", (e) => {
         e.stopPropagation();
-        table.querySelectorAll(".column-menu.show").forEach(m => {
+        table.querySelectorAll(".column-menu.show").forEach((m) => {
           if (m !== menu) m.classList.remove("show");
         });
         menu.classList.toggle("show");
       });
 
-      menu.addEventListener("click", e => e.stopPropagation());
+      menu.addEventListener("click", (e) => e.stopPropagation());
 
       const hideButton = menu.querySelector(".hide-column");
-      hideButton.addEventListener("click", e => {
+      hideButton.addEventListener("click", (e) => {
         e.stopPropagation();
         hideColumn(index);
         menu.classList.remove("show");
@@ -424,13 +455,34 @@ function createTable() {
 
   const filters = new Map();
 
+  function getColumnName(columnIndex) {
+    const table = document.getElementById("resizable-table");
+    const headers = table.querySelectorAll("th");
+    const header = headers[columnIndex];
+    return header.querySelector(".header-content span:nth-child(2)")
+      ?.textContent;
+  }
+
+  function getColumnIndexByName(columnName) {
+    const table = document.getElementById("resizable-table");
+    const headers = table.querySelectorAll("th");
+    return Array.from(headers).findIndex(
+      (header) =>
+        header.querySelector(".header-content span:nth-child(2)")
+          ?.textContent === columnName
+    );
+  }
+
   function applyFilter(columnIndex, filterType, filterValue) {
-    filters.set(columnIndex, { type: filterType, value: filterValue });
+    const columnName = getColumnName(columnIndex);
+    console.log(getColumnName(columnIndex), columnIndex);
+    filters.set(columnName, { type: filterType, value: filterValue });
     updateTableFilters();
   }
 
   function clearFilter(columnIndex) {
-    filters.delete(columnIndex);
+    const columnName = getColumnName(columnIndex);
+    filters.delete(columnName);
 
     // Clear input and select values
     const header = headers[columnIndex];
@@ -473,10 +525,10 @@ function createTable() {
 
   clearAllFiltersButton.addEventListener("click", () => {
     // Clear all filter inputs and selects
-    table.querySelectorAll(".filter-input").forEach(input => {
+    table.querySelectorAll(".filter-input").forEach((input) => {
       input.value = "";
     });
-    table.querySelectorAll(".filter-select").forEach(select => {
+    table.querySelectorAll(".filter-select").forEach((select) => {
       select.selectedIndex = 0;
     });
 
@@ -485,19 +537,22 @@ function createTable() {
     updateTableFilters();
 
     // Hide filter badges
-    table.querySelectorAll(".filter-badge").forEach(badge => {
+    table.querySelectorAll(".filter-badge").forEach((badge) => {
       badge.style.display = "none";
     });
   });
 
-  const originalUpdateTableFilters = updateTableFilters;
+  // const originalUpdateTableFilters = updateTableFilters;
   function updateTableFilters() {
     const rows = table.querySelectorAll("tbody tr");
 
-    rows.forEach(row => {
+    rows.forEach((row) => {
       let showRow = true;
 
-      filters.forEach((filter, columnIndex) => {
+      filters.forEach((filter, columnName) => {
+        const columnIndex = getColumnIndexByName(columnName);
+        if (columnIndex === -1) return; // Skip if column not found
+
         const cell = row.cells[columnIndex];
         const cellValue = cell.textContent.trim();
         const isPersianNumber = cell.querySelector(".persian-number") !== null;
@@ -542,7 +597,11 @@ function createTable() {
     });
 
     // Update filter badges
-    headers.forEach((header, index) => {
+    headers.forEach((header) => {
+      const columnName = header.querySelector(
+        ".header-content span:nth-child(2)"
+      )?.textContent;
+
       const badge =
         header.querySelector(".filter-badge") ||
         (() => {
@@ -553,7 +612,7 @@ function createTable() {
           return badge;
         })();
 
-      badge.style.display = filters.has(index) ? "inline-block" : "none";
+      badge.style.display = filters.has(columnName) ? "inline-block" : "none";
     });
 
     // Update clear all filters button visibility
@@ -573,8 +632,14 @@ function createTable() {
         const filterType = select.value;
         const filterValue = input.value;
 
-        if (filterType === "is-empty" || filterType === "is-not-empty" || filterValue) {
+        if (
+          filterType === "is-empty" ||
+          filterType === "is-not-empty" ||
+          filterValue
+        ) {
           applyFilter(index, filterType, filterValue);
+        } else {
+          clearFilter(index);
         }
 
         // Hide menu after applying filter
@@ -582,7 +647,7 @@ function createTable() {
       });
 
       // Add input shortcuts
-      input.addEventListener("keypress", e => {
+      input.addEventListener("keypress", (e) => {
         if (e.key === "Enter") {
           applyButton.click();
         }
