@@ -44,6 +44,7 @@
         background-color: #f5f5f5;
         font-weight: bold;
         cursor: pointer;
+        min-width: 100px;
       }
 
       th:hover {
@@ -125,7 +126,8 @@
       .sort-icon::after {
         content: "↕️";
         position: absolute;
-        right: 0;
+        inset: 0;
+        margin-top: -2.5px;
         color: #999;
       }
 
@@ -145,6 +147,92 @@
         align-items: center;
         gap: 4px;
       }
+
+      /* Add new styles for menu */
+      .column-menu-button {
+        padding: 2px 6px;
+        background: #f5f5f5;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        cursor: pointer;
+        position: absolute;
+        height: fit-content;
+        left: 12px;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+      }
+
+      .column-menu {
+        position: absolute;
+        top: calc(100% - 12px);
+        left: 12px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        display: none;
+        z-index: 1000;
+        min-width: 150px;
+      }
+
+      .column-menu.show {
+        display: block;
+      }
+
+      .menu-item {
+        padding: 8px 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .menu-item:hover {
+        background: #f5f5f5;
+      }
+
+      .menu-separator {
+        border-top: 1px solid #ddd;
+        margin: 4px 0;
+      }
+
+      .hidden-column {
+        display: none;
+      }
+
+      .menu-item.show-columns {
+        position: relative;
+      }
+
+      .submenu {
+        position: absolute;
+        left: 100%;
+        top: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        display: none;
+        min-width: 150px;
+      }
+
+      .menu-item.show-columns:hover .submenu {
+        display: block;
+      }
+
+      .checkbox-item {
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+
+      .checkbox-item:hover {
+        background: #f5f5f5;
+      }
+
+      .checkbox-item input {
+        margin-left: 8px;
+      }
     </style>
   </head>
   <body>
@@ -153,24 +241,72 @@
         <thead>
           <tr>
             <th data-col="0" data-sort="none">
-              <span class="handle">⋮⋮</span>نام
-              <div class="resizer"></div>
-              <span class="sort-icon"></span>
+              <div class="header-content">
+                <span class="handle">⋮⋮</span>
+                <span>نام</span>
+                <div class="resizer"></div>
+                <button class="column-menu-button">☰</button>
+                <div class="column-menu">
+                  <div class="menu-item hide-column">پنهان کردن ستون</div>
+                  <div class="menu-separator"></div>
+                  <div class="menu-item show-columns">
+                    نمایش ستون‌ها
+                    <div class="submenu"></div>
+                  </div>
+                </div>
+                <span class="sort-icon"></span>
+              </div>
             </th>
             <th data-col="1" class="" data-sort="none">
-              <span class="handle">⋮⋮</span>سن
-              <div class="resizer"></div>
-              <span class="sort-icon" lang="en"></span>
+              <div class="header-content">
+                <span class="handle">⋮⋮</span>
+                <span>سن</span>
+                <div class="resizer"></div>
+                <button class="column-menu-button">☰</button>
+                <div class="column-menu">
+                  <div class="menu-item hide-column">پنهان کردن ستون</div>
+                  <div class="menu-separator"></div>
+                  <div class="menu-item show-columns">
+                    نمایش ستون‌ها
+                    <div class="submenu"></div>
+                  </div>
+                </div>
+                <span class="sort-icon"></span>
+              </div>
             </th>
             <th data-col="2" data-sort="none">
-              <span class="handle">⋮⋮</span>شهر
-              <div class="resizer"></div>
-              <span class="sort-icon"></span>
+              <div class="header-content">
+                <span class="handle">⋮⋮</span>
+                <span>شهر</span>
+                <div class="resizer"></div>
+                <button class="column-menu-button">☰</button>
+                <div class="column-menu">
+                  <div class="menu-item hide-column">پنهان کردن ستون</div>
+                  <div class="menu-separator"></div>
+                  <div class="menu-item show-columns">
+                    نمایش ستون‌ها
+                    <div class="submenu"></div>
+                  </div>
+                </div>
+                <span class="sort-icon"></span>
+              </div>
             </th>
             <th data-col="3" class="" data-sort="none">
-              <span class="handle">⋮⋮</span>کشور
-              <div class="resizer"></div>
-              <span class="sort-icon"></span>
+              <div class="header-content">
+                <span class="handle">⋮⋮</span>
+                <span>کشور</span>
+                <div class="resizer"></div>
+                <button class="column-menu-button">☰</button>
+                <div class="column-menu">
+                  <div class="menu-item hide-column">پنهان کردن ستون</div>
+                  <div class="menu-separator"></div>
+                  <div class="menu-item show-columns">
+                    نمایش ستون‌ها
+                    <div class="submenu"></div>
+                  </div>
+                </div>
+                <span class="sort-icon"></span>
+              </div>
             </th>
           </tr>
         </thead>
@@ -222,91 +358,102 @@
         return str.replace(/[۰-۹]/g, d => persianNumbers.indexOf(d));
       }
 
-      function sortingHandler(e) {
-        const table = document.getElementById("resizable-table");
-        const headers = table.querySelectorAll("th");
-
-        // Ignore click if it's on handle or resizer
-        if (e.target.classList.contains("handle") || e.target.classList.contains("resizer")) {
-          return;
-        }
-
-        const currentSort = header.getAttribute("data-sort");
-
-        // Reset all other headers
-        headers.forEach(h => {
-          if (h !== header) h.setAttribute("data-sort", "none");
-        });
-
-        // Cycle through sort states
-        let newSort;
-        switch (currentSort) {
-          case "none":
-            newSort = "asc";
-            break;
-          case "asc":
-            newSort = "desc";
-            break;
-          case "desc":
-            newSort = "none";
-            break;
-        }
-
-        header.setAttribute("data-sort", newSort);
-
-        // Get table data and sort
-        const tbody = table.querySelector("tbody");
-        const rows = Array.from(tbody.querySelectorAll("tr"));
-
-        if (newSort !== "none") {
-          rows.sort((a, b) => {
-            let aVal = a.cells[index].textContent.trim();
-            let bVal = b.cells[index].textContent.trim();
-
-            // Convert Persian numbers for comparison if needed
-            if (a.cells[index].querySelector(".persian-number")) {
-              aVal = convertPersianToEnglish(aVal);
-              bVal = convertPersianToEnglish(bVal);
-              aVal = parseInt(aVal);
-              bVal = parseInt(bVal);
-            }
-
-            console.log(typeof aVal, typeof bVal);
-
-            if (newSort === "asc") {
-              return bVal.toString().localeCompare(aVal.toString(), "fa");
-            } else {
-              return aVal.toString().localeCompare(bVal.toString(), "fa");
-            }
-          });
-        } else {
-          // Reset to original order based on DOM position
-          rows.sort((a, b) => {
-            return Array.from(tbody.children).indexOf(a) - Array.from(tbody.children).indexOf(b);
-          });
-        }
-
-        // Reorder the table
-        rows.forEach(row => tbody.appendChild(row));
-      }
-
       function createTable() {
         const table = document.getElementById("resizable-table");
         const headers = table.querySelectorAll("th");
         let draggingCol = null;
         let startX, startWidth;
         let draggedHeader = null;
+        const LOCAL_STORAGE_KEY = "tableColumnStates";
+
+        // Keep track of the current column order
+        let columnOrder = Array.from(headers).map((_, index) => index);
+
+        function sortingHandler(e, header) {
+          // Ignore click if it's on handle or resizer
+          if (
+            e.target.classList.contains("handle") ||
+            e.target.classList.contains("resizer") ||
+            e.target.classList.contains("column-menu-button") ||
+            e.target.closest(".column-menu")
+          ) {
+            return;
+          }
+
+          // Get the current column index based on DOM position
+          const currentIndex = Array.from(header.parentElement.children).indexOf(header);
+
+          const currentSort = header.getAttribute("data-sort");
+
+          // Reset all other headers
+          headers.forEach(h => {
+            if (h !== header) h.setAttribute("data-sort", "none");
+          });
+
+          // Cycle through sort states
+          let newSort;
+          switch (currentSort) {
+            case "none":
+              newSort = "asc";
+              break;
+            case "asc":
+              newSort = "desc";
+              break;
+            case "desc":
+              newSort = "none";
+              break;
+          }
+
+          header.setAttribute("data-sort", newSort);
+
+          // Get table data and sort
+          const tbody = table.querySelector("tbody");
+          const rows = Array.from(tbody.querySelectorAll("tr"));
+
+          if (newSort !== "none") {
+            rows.sort((a, b) => {
+              let aVal = a.cells[currentIndex].textContent.trim();
+              let bVal = b.cells[currentIndex].textContent.trim();
+
+              console.log(aVal, bVal);
+
+              // Convert Persian numbers for comparison if needed
+              if (a.cells[currentIndex].querySelector(".persian-number")) {
+                aVal = convertPersianToEnglish(aVal);
+                bVal = convertPersianToEnglish(bVal);
+                aVal = parseInt(aVal);
+                bVal = parseInt(bVal);
+              }
+
+              if (newSort === "asc") {
+                return bVal.toString().localeCompare(aVal.toString(), "fa");
+              } else {
+                return aVal.toString().localeCompare(bVal.toString(), "fa");
+              }
+            });
+          } else {
+            // Reset to original order based on DOM position
+            rows.sort((a, b) => {
+              return Array.from(tbody.children).indexOf(a) - Array.from(tbody.children).indexOf(b);
+            });
+          }
+
+          // Reorder the table
+          rows.forEach(row => tbody.appendChild(row));
+        }
 
         // Column resizing functionality
-        headers.forEach((header, index) => {
-          header.addEventListener("click", sortingHandler);
+        headers.forEach(header => {
+          header.addEventListener("click", e => {
+            sortingHandler(e, header);
+          });
 
           header.style.width = `${header.offsetWidth}px`;
 
           const resizer = header.querySelector(".resizer");
           if (resizer) {
             resizer.addEventListener("mousedown", function (e) {
-              e.stopPropagation(); // Prevent drag start
+              e.stopPropagation();
               draggingCol = header;
               startX = e.pageX;
               startWidth = header.offsetWidth;
@@ -350,7 +497,6 @@
           headers.forEach(header => {
             if (header !== draggedHeader) {
               const rect = header.getBoundingClientRect();
-
               const min = rect.x;
               const max = rect.x + rect.width;
 
@@ -365,27 +511,27 @@
           if (draggedHeader) {
             const dragOverHeader = table.querySelector("th.drag-over");
             if (dragOverHeader) {
-              const draggedIndex = parseInt(draggedHeader.dataset.col);
-              const dropIndex = parseInt(dragOverHeader.dataset.col);
+              // Get indices based on current DOM position
+              const draggedIndex = Array.from(draggedHeader.parentElement.children).indexOf(draggedHeader);
+              const dropIndex = Array.from(dragOverHeader.parentElement.children).indexOf(dragOverHeader);
+
+              // Update column order array
+              const newOrder = [...columnOrder];
+              const [removed] = newOrder.splice(draggedIndex, 1);
+              newOrder.splice(dropIndex, 0, removed);
+              columnOrder = newOrder;
 
               // Swap columns in the table
               const rows = table.querySelectorAll("tr");
               rows.forEach(row => {
                 const cells = row.children;
                 const draggedCell = cells[draggedIndex];
-                const dropCell = cells[dropIndex];
-
-                // Update data-col attributes
-                if (row.parentElement.tagName === "THEAD") {
-                  draggedCell.dataset.col = dropIndex;
-                  dropCell.dataset.col = draggedIndex;
-                }
 
                 // Perform the swap
                 if (draggedIndex < dropIndex) {
-                  row.insertBefore(draggedCell, dropCell.nextSibling);
+                  row.insertBefore(draggedCell, cells[dropIndex].nextSibling);
                 } else {
-                  row.insertBefore(draggedCell, dropCell);
+                  row.insertBefore(draggedCell, cells[dropIndex]);
                 }
               });
             }
@@ -397,9 +543,197 @@
 
           document.removeEventListener("mousemove", onMove);
           document.removeEventListener("mouseup", stopMove);
-
-          const headers = table.querySelectorAll("th");
         }
+
+        //
+        // Menu
+        //
+
+        // Store column states globally
+        const columnStates = new Map();
+
+        // Load visibility states from localStorage
+        function loadVisibilityStates() {
+          try {
+            const savedStates = localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (savedStates) {
+              return JSON.parse(savedStates);
+            }
+          } catch (error) {
+            console.error("Error loading visibility states:", error);
+          }
+          return {};
+        }
+
+        // Save visibility states to localStorage
+        function saveVisibilityStates() {
+          const states = {};
+          columnStates.forEach((state, index) => {
+            states[state.name] = state.visible;
+          });
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(states));
+        }
+
+        // Initialize column states
+        function initializeColumnStates() {
+          const savedStates = loadVisibilityStates();
+
+          Array.from(headers).forEach((header, index) => {
+            const columnName = header.querySelector(".header-content span:nth-child(2)")?.textContent;
+            const isVisible = savedStates.hasOwnProperty(columnName) ? savedStates[columnName] : true;
+
+            columnStates.set(index, {
+              name: columnName,
+              visible: isVisible,
+              originalIndex: index,
+            });
+          });
+
+          // Apply initial visibility states
+          updateColumnVisibility();
+        }
+
+        function updateSubmenu(submenu) {
+          submenu.innerHTML = "";
+          const sortedStates = Array.from(columnStates.entries()).sort((a, b) => a[1].originalIndex - b[1].originalIndex);
+
+          sortedStates.forEach(([index, state]) => {
+            const item = document.createElement("div");
+            item.className = "checkbox-item";
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.checked = state.visible;
+
+            checkbox.addEventListener(
+              "change",
+              (function (columnIndex) {
+                return function (e) {
+                  e.stopPropagation();
+                  toggleColumn(columnIndex, e.target.checked);
+                  updateAllSubmenus();
+                  saveVisibilityStates();
+                };
+              })(index)
+            );
+
+            const label = document.createElement("label");
+            label.textContent = state.name;
+
+            item.appendChild(checkbox);
+            item.appendChild(label);
+            submenu.appendChild(item);
+          });
+        }
+
+        function updateAllSubmenus() {
+          const allSubmenus = table.querySelectorAll(".submenu");
+          allSubmenus.forEach(submenu => {
+            updateSubmenu(submenu);
+          });
+        }
+
+        function toggleColumn(index, visible) {
+          const state = columnStates.get(index);
+          if (state) {
+            state.visible = visible;
+            updateColumnVisibility();
+            saveVisibilityStates();
+          }
+        }
+
+        function hideColumn(index) {
+          toggleColumn(index, false);
+          updateAllSubmenus();
+        }
+
+        function updateColumnVisibility() {
+          headers.forEach((header, index) => {
+            const state = columnStates.get(index);
+            if (state) {
+              if (!state.visible) {
+                header.classList.add("hidden-column");
+              } else {
+                header.classList.remove("hidden-column");
+              }
+            }
+          });
+
+          const rows = table.querySelectorAll("tbody tr");
+          rows.forEach(row => {
+            Array.from(row.cells).forEach((cell, index) => {
+              const state = columnStates.get(index);
+              if (state) {
+                if (!state.visible) {
+                  cell.classList.add("hidden-column");
+                } else {
+                  cell.classList.remove("hidden-column");
+                }
+              }
+            });
+          });
+        }
+
+        function initializeMenus() {
+          const menuButtons = table.querySelectorAll(".column-menu-button");
+
+          document.addEventListener("click", e => {
+            if (!e.target.closest(".column-menu-button")) {
+              table.querySelectorAll(".column-menu.show").forEach(menu => {
+                menu.classList.remove("show");
+              });
+            }
+          });
+
+          menuButtons.forEach((button, index) => {
+            const menu = button.nextElementSibling;
+
+            button.addEventListener("click", e => {
+              e.stopPropagation();
+              table.querySelectorAll(".column-menu.show").forEach(m => {
+                if (m !== menu) m.classList.remove("show");
+              });
+              menu.classList.toggle("show");
+            });
+
+            menu.addEventListener("click", e => e.stopPropagation());
+
+            const hideButton = menu.querySelector(".hide-column");
+            hideButton.addEventListener("click", e => {
+              e.stopPropagation();
+              hideColumn(index);
+              menu.classList.remove("show");
+              saveVisibilityStates();
+            });
+
+            updateSubmenu(menu.querySelector(".submenu"));
+          });
+        }
+
+        // Initialize everything
+        initializeColumnStates();
+        initializeMenus();
+
+        // Handle column reordering
+        const originalStopMove = stopMove;
+        stopMove = function () {
+          originalStopMove();
+          const newStates = new Map();
+          headers.forEach((header, newIndex) => {
+            const originalIndex = parseInt(header.getAttribute("data-col"));
+            const oldState = columnStates.get(originalIndex);
+            if (oldState) {
+              newStates.set(newIndex, {
+                ...oldState,
+                originalIndex: oldState.originalIndex,
+              });
+            }
+          });
+          columnStates.clear();
+          newStates.forEach((state, index) => columnStates.set(index, state));
+          updateAllSubmenus();
+          saveVisibilityStates();
+        };
       }
 
       document.addEventListener("DOMContentLoaded", function () {
