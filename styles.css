@@ -76,6 +76,38 @@ th:hover {
   background-color: #e8e8fb;
 }
 
+.select-th {
+  width: 20px !important;
+}
+
+.select-th div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.select-th div input {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+}
+
+.select-td {
+  width: 20px !important;
+}
+
+.select-td div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.select-td div input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+}
+
 .resizer {
   position: absolute;
   left: 0; /* Changed from right to left for RTL */
@@ -205,8 +237,8 @@ th[data-sort="desc"] .sort-icon::after {
 
 .column-menu {
   position: absolute;
-  top: calc(100% - 12px);
-  left: 12px;
+  top: calc(100% - 8px);
+  left: 0px;
   background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -260,7 +292,7 @@ th[data-sort="desc"] .sort-icon::after {
 
 .submenu {
   position: absolute;
-  left: 100%;
+  right: 100%;
   top: -100px;
   background: white;
   border: 1px solid #ddd;
@@ -269,6 +301,11 @@ th[data-sort="desc"] .sort-icon::after {
   display: none;
   min-width: 150px;
   z-index: 1001; /* Higher than parent menu */
+}
+
+th:nth-last-child(-n + 1) .submenu {
+  right: auto;
+  left: 100%;
 }
 
 .menu-item.show-columns:hover .submenu {
@@ -380,14 +417,23 @@ th[data-sort="desc"] .sort-icon::after {
 }
 
 .filter-badge {
-  background: #e3f2fd;
-  color: #1976d2;
-  padding: 2px 6px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50px;
+  padding: 0;
   border-radius: 4px;
-  font-size: 0.8em;
-  margin-right: 8px;
+  margin-top: 2px;
   display: none;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #404040;
+}
+
+.filter-badge:hover {
+  color: #000000;
 }
 
 .button-group {

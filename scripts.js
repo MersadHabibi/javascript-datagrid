@@ -38,7 +38,9 @@ function createTable() {
       e.target.classList.contains("handle") ||
       e.target.classList.contains("resizer") ||
       e.target.classList.contains("column-menu-button") ||
-      e.target.closest(".column-menu")
+      e.target.closest(".column-menu") ||
+      e.target.classList.contains("filter-badge") ||
+      e.target.closest(".select-th")
     ) {
       return;
     }
@@ -112,6 +114,10 @@ function createTable() {
 
   // Column resizing functionality
   headers.forEach((header) => {
+    if (header.closest(".select-th")) {
+      return;
+    }
+
     // Sorting event
     header.addEventListener("click", (e) => {
       sortingHandler(e, header);
@@ -145,7 +151,7 @@ function createTable() {
 
     // Column moving functionality
     const handle = header.querySelector(".handle");
-    handle.addEventListener("mousedown", function (e) {
+    handle?.addEventListener("mousedown", function (e) {
       draggedHeader = header;
       header.classList.add("dragging");
 
@@ -318,6 +324,9 @@ function createTable() {
     );
 
     sortedStates.forEach(([index, state]) => {
+      if (!state.name) {
+        return;
+      }
       const item = document.createElement("div");
       item.className = "checkbox-item";
 
@@ -330,6 +339,7 @@ function createTable() {
         (function (columnIndex) {
           return function (e) {
             e.stopPropagation();
+
             toggleColumn(columnIndex, e.target.checked);
             updateAllSubmenus();
             saveVisibilityStates();
@@ -542,8 +552,8 @@ function createTable() {
     });
   });
 
-  // const originalUpdateTableFilters = updateTableFilters;
   function updateTableFilters() {
+    const table = document.getElementById("resizable-table");
     const rows = table.querySelectorAll("tbody tr");
 
     rows.forEach((row) => {
@@ -596,6 +606,8 @@ function createTable() {
       row.style.display = showRow ? "" : "none";
     });
 
+    const headers = table.querySelectorAll("th");
+
     // Update filter badges
     headers.forEach((header) => {
       const columnName = header.querySelector(
@@ -607,12 +619,24 @@ function createTable() {
         (() => {
           const badge = document.createElement("span");
           badge.className = "filter-badge";
-          badge.textContent = "🔍";
-          header.querySelector(".header-content").appendChild(badge);
+          badge.innerHTML = `<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-filter-x"><path d="M13.013 3H2l8 9.46V19l4 2v-8.54l.9-1.055"/><path d="m22 3-5 5"/><path d="m17 3 5 5"/></svg>`;
+          header.querySelector(".header-content")?.appendChild(badge);
           return badge;
         })();
 
-      badge.style.display = filters.has(columnName) ? "inline-block" : "none";
+      badge?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        clearFilter(getColumnIndexByName(columnName));
+      });
+
+      badge.style.display = filters.has(columnName) ? "flex" : "none";
+
+      if (filters.has(columnName)) {
+        header.style.backgroundColor = "#d0d0ff";
+        console.log(columnName);
+      } else {
+        header.style.backgroundColor = "#f1f1f9";
+      }
     });
 
     // Update clear all filters button visibility
@@ -628,18 +652,29 @@ function createTable() {
       const input = container.querySelector(".filter-input");
       const applyButton = container.querySelector(".apply-filter");
 
-      applyButton.addEventListener("click", () => {
+      applyButton.addEventListener("click", (e) => {
         const filterType = select.value;
         const filterValue = input.value;
+
+        const columnName =
+          e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector(
+            "span:nth-child(2)"
+          )?.textContent;
+
+        console.log(columnName);
 
         if (
           filterType === "is-empty" ||
           filterType === "is-not-empty" ||
           filterValue
         ) {
-          applyFilter(index, filterType, filterValue);
+          applyFilter(
+            getColumnIndexByName(columnName),
+            filterType,
+            filterValue
+          );
         } else {
-          clearFilter(index);
+          clearFilter(getColumnIndexByName(columnName));
         }
 
         // Hide menu after applying filter
@@ -654,6 +689,39 @@ function createTable() {
       });
     });
   }
+
+  // Selection
+
+  const selectAllButton = table.querySelector(".select-th input");
+  const selectButtons = table.querySelectorAll(".select-td input");
+
+  selectAllButton.addEventListener("click", (event) => {
+    if (event.target.checked) {
+      selectButtons.forEach((btn) => {
+        btn.checked = true;
+      });
+    } else {
+      selectButtons.forEach((btn) => {
+        btn.checked = false;
+      });
+    }
+  });
+
+  selectButtons.forEach((btn) => {
+    btn.addEventListener("click", (event) => {
+      if (event.target.checked) {
+        let isAllSelected = true;
+
+        selectButtons.forEach((selectBtn) => {
+          if (!selectBtn.checked) isAllSelected = false;
+        });
+
+        if (isAllSelected) selectAllButton.checked = true;
+      } else {
+        selectAllButton.checked = false;
+      }
+    });
+  });
 
   // Initialize everything
   initializeColumnStates();
