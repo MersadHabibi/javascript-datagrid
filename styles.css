@@ -5,6 +5,10 @@
   font-weight: 400;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .prevent-select {
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
@@ -18,6 +22,10 @@ body {
   margin: 0;
   height: 100dvh;
   overflow-y: visible !important;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 .wrapper {
@@ -77,7 +85,8 @@ th:hover {
 }
 
 .select-th {
-  width: 20px !important;
+  width: 40px !important;
+  min-width: 40px !important;
 }
 
 .select-th div {
@@ -90,6 +99,12 @@ th:hover {
   width: 20px;
   height: 20px;
   margin: 0;
+}
+
+.select-th .column-menu-button,
+.select-th .column-menu,
+.select-th .sort-icon {
+  display: none !important;
 }
 
 .select-td {
@@ -177,7 +192,7 @@ th.drag-over::after {
 }
 
 .sort-icon::after {
-  content: "↕️";
+  content: "";
   position: absolute;
   inset: 0;
   margin-top: -2.5px;
@@ -333,6 +348,7 @@ th:nth-last-child(-n + 1) .submenu {
   gap: 8px;
   padding: 8px 12px;
   flex-direction: column;
+  width: 100%;
 }
 
 .filter-row {
@@ -350,6 +366,7 @@ th:nth-last-child(-n + 1) .submenu {
   font-family: inherit;
   flex: 1;
   outline: none;
+  width: 100%;
 }
 
 .filter-input:focus {
@@ -441,3 +458,5 @@ th:nth-last-child(-n + 1) .submenu {
   gap: 8px;
   /* justify-content: flex-end; */
 }
+
+/* Grouping */

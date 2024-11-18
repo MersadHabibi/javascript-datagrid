@@ -1,6 +1,237 @@
+const fakeHeaders = ["نام", "شهر", "سن", "کشور"];
+
+const fakeData = [
+  ["اریم حسینی", "اصفهان", "۲۵", "ایران"],
+  ["پلی محمدی", "تهران", "۳۰", "ایران"],
+  ["علی محمدی", "تهران", "۳۰", "ایران"],
+  ["علی محمدی", "تهران", "۳۰", "ایران"],
+  ["علی محمدی	", "تهران", "۳۰", "ایران"],
+  ["e بث صصعخص د صثخ ذصثبضا کریمی	", "اصفهان", "۳۵", "ایران"],
+];
+
+function insertData(gridData, headersData) {
+  const table = document.getElementById("resizable-table");
+  const headersContainer = table.querySelector("thead tr");
+  const dataContainer = table.querySelector("tbody");
+
+  headersContainer.innerHTML = `
+    <th
+      class="select-th"
+      data-col="0"
+      data-sort="none"
+      style="width: 30px !important; min-width: 0px !important">
+      <div>
+        <input type="checkbox" />
+      </div>
+      <button class="column-menu-button">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-ellipsis-vertical">
+          <circle cx="12" cy="12" r="1" />
+          <circle cx="12" cy="5" r="1" />
+          <circle cx="12" cy="19" r="1" />
+        </svg>
+      </button>
+      <div class="column-menu">
+        <div class="menu-item filter-column">
+          <div class="filter-container">
+            <div class="filter-row">
+              <select class="filter-select">
+                <option value="equals">برابر است با</option>
+                <option value="not-equals">برابر نیست با</option>
+                <option value="starts-with">شروع می‌شود با</option>
+                <option value="contains">شامل</option>
+                <option value="not-contains">شامل نیست</option>
+                <option value="ends-with">پایان می‌یابد با</option>
+                <option value="is-empty">خالی است</option>
+                <option value="is-not-empty">خالی نیست</option>
+              </select>
+              <input
+                type="text"
+                class="filter-input"
+                placeholder="مقدار فیلتر..." />
+            </div>
+            <div class="button-group">
+              <button class="clear-filter">پاک کردن</button>
+              <button class="apply-filter">اعمال</button>
+            </div>
+          </div>
+        </div>
+        <div class="menu-separator"></div>
+        <div class="menu-item-button menu-item hide-column">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-eye-off">
+            <path
+              d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49" />
+            <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
+            <path
+              d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143" />
+            <path d="m2 2 20 20" />
+          </svg>
+          <span>پنهان کردن ستون</span>
+        </div>
+        <div class="menu-separator"></div>
+        <div class="menu-item-button menu-item show-columns">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-list-todo">
+            <rect x="3" y="5" width="6" height="6" rx="1" />
+            <path d="m3 17 2 2 4-4" />
+            <path d="M13 6h8" />
+            <path d="M13 12h8" />
+            <path d="M13 18h8" />
+          </svg>
+          <span>نمایش ستون‌ها</span>
+          <div class="submenu"></div>
+        </div>
+      </div>
+      <span class="sort-icon"></span>
+    </th>`;
+
+  headersData.forEach((header, index) => {
+    headersContainer.insertAdjacentHTML(
+      "beforeend",
+      `<th data-col="${index + 1}" data-sort="none">
+        <div class="header-content">
+          <span class="handle">⋮⋮</span>
+          <span>${header}</span>
+          <div class="resizer"></div>
+          <button class="column-menu-button">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-ellipsis-vertical">
+              <circle cx="12" cy="12" r="1" />
+              <circle cx="12" cy="5" r="1" />
+              <circle cx="12" cy="19" r="1" />
+            </svg>
+          </button>
+          <div class="column-menu">
+            <div class="menu-item filter-column">
+              <div class="filter-container">
+                <div class="filter-row">
+                  <select class="filter-select">
+                    <option value="equals">برابر است با</option>
+                    <option value="not-equals">برابر نیست با</option>
+                    <option value="starts-with">شروع می‌شود با</option>
+                    <option value="contains">شامل</option>
+                    <option value="not-contains">شامل نیست</option>
+                    <option value="ends-with">پایان می‌یابد با</option>
+                    <option value="is-empty">خالی است</option>
+                    <option value="is-not-empty">خالی نیست</option>
+                  </select>
+                  <input
+                    type="text"
+                    class="filter-input"
+                    placeholder="مقدار فیلتر..." />
+                </div>
+                <div class="button-group">
+                  <button class="clear-filter">پاک کردن</button>
+                  <button class="apply-filter">اعمال</button>
+                </div>
+              </div>
+            </div>
+            <div class="menu-separator"></div>
+            <div class="menu-item-button menu-item hide-column">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-eye-off">
+                <path
+                  d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49" />
+                <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
+                <path
+                  d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143" />
+                <path d="m2 2 20 20" />
+              </svg>
+              <span>پنهان کردن ستون</span>
+            </div>
+            <div class="menu-separator"></div>
+            <div class="menu-item-button menu-item show-columns">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-list-todo">
+                <rect x="3" y="5" width="6" height="6" rx="1" />
+                <path d="m3 17 2 2 4-4" />
+                <path d="M13 6h8" />
+                <path d="M13 12h8" />
+                <path d="M13 18h8" />
+              </svg>
+              <span>نمایش ستون‌ها</span>
+              <div class="submenu"></div>
+            </div>
+          </div>
+          <span class="sort-icon"></span>
+        </div>
+      </th>`
+    );
+  });
+
+  dataContainer.innerHTML = "";
+
+  gridData.forEach((items) => {
+    dataContainer.insertAdjacentHTML(
+      "beforeend",
+      `<tr>
+        <td class="select-td">
+          <div>
+            <input type="checkbox" />
+          </div>
+        </td>
+        ${items.map((item) => `<td>${item}</td>`).join("")}
+      </tr>`
+    );
+  });
+}
+
 function convertPersianToEnglish(str) {
   const persianNumbers = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
   return str.replace(/[۰-۹]/g, (d) => persianNumbers.indexOf(d));
+}
+
+function getColumnIndexByName(columnName) {
+  const table = document.getElementById("resizable-table");
+  const headers = table.querySelectorAll("th");
+  return Array.from(headers).findIndex(
+    (header) =>
+      header.querySelector(".header-content span:nth-child(2)")?.textContent ===
+      columnName
+  );
 }
 
 function createTable() {
@@ -79,8 +310,8 @@ function createTable() {
 
     if (newSort !== "none") {
       rows.sort((a, b) => {
-        let aVal = a.cells[currentIndex].textContent.trim();
-        let bVal = b.cells[currentIndex].textContent.trim();
+        let aVal = a.cells[currentIndex]?.textContent.trim();
+        let bVal = b.cells[currentIndex]?.textContent.trim();
 
         console.log(aVal, bVal);
 
@@ -169,11 +400,6 @@ function createTable() {
       // For RTL, we need to invert the difference
       const newWidth = Math.max(startWidth - diffX, 150); // Minimum width of 100px
       draggingCol.style.width = `${newWidth}px`;
-
-      // headers.forEach(header => {
-      //   console.log(header.dataset.col, header.clientWidth);
-      //   header.style.width = `${header.clientWidth}px`;
-      // });
     }
   }
 
@@ -182,11 +408,6 @@ function createTable() {
     table.classList.remove("resizing");
     document.removeEventListener("mousemove", onResize);
     document.removeEventListener("mouseup", stopResize);
-
-    // headers.forEach(header => {
-    //   console.log(header.dataset.col, header.clientWidth);
-    //   header.style.width = `${header.offsetWidth}px`;
-    // });
   }
 
   function onMove(e) {
@@ -306,11 +527,13 @@ function createTable() {
         ? savedStates[columnName]
         : true;
 
-      columnStates.set(index, {
+      columnStates.set(getColumnIndexByName(columnName), {
         name: columnName,
         visible: isVisible,
         originalIndex: index,
       });
+
+      console.log(columnStates);
     });
 
     // Apply initial visibility states
@@ -365,6 +588,8 @@ function createTable() {
 
   function toggleColumn(index, visible) {
     const state = columnStates.get(index);
+
+    console.log(state);
     if (state) {
       state.visible = visible;
       updateColumnVisibility();
@@ -431,6 +656,7 @@ function createTable() {
       const hideButton = menu.querySelector(".hide-column");
       hideButton.addEventListener("click", (e) => {
         e.stopPropagation();
+        console.log(index);
         hideColumn(index);
         menu.classList.remove("show");
         saveVisibilityStates();
@@ -730,6 +956,237 @@ function createTable() {
   // initializeClearFilters();
 }
 
+// Grouping
+
+function changeFeaturesVisibility(action) {
+  const openMenuButton = document.querySelectorAll(".column-menu-button");
+  const sortIcon = document.querySelectorAll(".sort-icon");
+  const handle = document.querySelectorAll(".handle");
+
+  if (action === "hide") {
+    openMenuButton.forEach((btn) => {
+      btn.classList.add("hidden");
+    });
+    sortIcon.forEach((icon) => {
+      icon.classList.add("hidden");
+    });
+    handle.forEach((elem) => {
+      elem.classList.add("hidden");
+    });
+  } else {
+    openMenuButton.forEach((btn) => {
+      btn.classList.remove("hidden");
+    });
+    sortIcon.forEach((icon) => {
+      icon.classList.remove("hidden");
+    });
+    handle.forEach((elem) => {
+      elem.classList.remove("hidden");
+    });
+  }
+}
+
+function addGroupByMenuItem() {
+  // Add group by menu item to each column menu
+  const columnMenus = document.querySelectorAll(".column-menu");
+  columnMenus.forEach((menu) => {
+    if (!menu.querySelector(".group-by")) {
+      const groupByItem = createGroupByMenuItem();
+      // Insert before show-columns
+      const showColumns = menu.querySelector(".show-columns");
+      menu.insertBefore(groupByItem, showColumns);
+      menu.insertBefore(createMenuSeparator(), showColumns);
+    }
+  });
+}
+
+function createGroupByMenuItem() {
+  const menuItem = document.createElement("div");
+  menuItem.className = "menu-item-button menu-item group-by";
+  menuItem.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-grid">
+      <rect width="7" height="7" x="3" y="3" rx="1" />
+      <rect width="7" height="7" x="14" y="3" rx="1" />
+      <rect width="7" height="7" x="14" y="14" rx="1" />
+      <rect width="7" height="7" x="3" y="14" rx="1" />
+    </svg>
+    <span>گروه‌بندی براساس این ستون</span>
+  `;
+
+  menuItem.addEventListener("click", function (e) {
+    const th = this.closest("th");
+    const columnIndex = th.getAttribute("data-col");
+    const columnName = th.querySelector(
+      ".header-content span:not(.handle)"
+    ).textContent;
+    console.log(columnIndex, columnName);
+    groupByColumn(getColumnIndexByName(columnName), columnName);
+  });
+
+  return menuItem;
+}
+
+function createMenuSeparator() {
+  const separator = document.createElement("div");
+  separator.className = "menu-separator";
+  return separator;
+}
+
+function addRemoveGroupButton() {
+  // Remove existing button if any
+  const existingButton = document.querySelector(".remove-group-button");
+  if (existingButton) {
+    existingButton.remove();
+  }
+
+  const tableContainer = document.querySelector(".table-container");
+  const removeButton = document.createElement("button");
+  removeButton.className = "remove-group-button";
+  removeButton.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+    حذف گروه‌بندی
+  `;
+
+  removeButton.addEventListener("click", removeGrouping);
+
+  // Insert after clear-all-filters button
+  const clearFiltersButton = document.querySelector(".clear-all-filters");
+  clearFiltersButton.parentNode.insertBefore(
+    removeButton,
+    clearFiltersButton.nextSibling
+  );
+}
+
+function removeGrouping() {
+  const table = document.getElementById("resizable-table");
+  const tbody = table.querySelector("tbody");
+
+  changeFeaturesVisibility("show");
+
+  // Remove group headers and show all rows
+  const groupHeaders = tbody.querySelectorAll(".group-header");
+  groupHeaders.forEach((header) => header.remove());
+
+  // Show all regular rows
+  tbody.querySelectorAll("tr").forEach((row) => {
+    row.style.display = "";
+  });
+
+  // Remove the remove-group button
+  const removeButton = document.querySelector(".remove-group-button");
+  if (removeButton) {
+    removeButton.remove();
+  }
+}
+
+// Update groupByColumn function to maintain sort order
+function groupByColumn(columnIndex, columnName) {
+  const table = document.getElementById("resizable-table");
+  const tbody = table.querySelector("tbody");
+  const rows = Array.from(tbody.querySelectorAll("tr:not(.group-header)"));
+
+  changeFeaturesVisibility("hide");
+
+  table.style.width = "fit-content";
+
+  // Create groups object
+  const groups = new Map();
+  rows.forEach((row) => {
+    const value = row.cells[columnIndex].textContent.trim();
+    if (!groups.has(value)) {
+      groups.set(value, []);
+    }
+    groups.get(value).push(row);
+  });
+
+  // Sort groups by key
+  const sortedGroups = new Map(
+    [...groups.entries()].sort((a, b) => a[0].localeCompare(b[0], "fa"))
+  );
+
+  // Clear existing tbody
+  tbody.innerHTML = "";
+
+  // Create and add group headers and rows
+  sortedGroups.forEach((groupRows, groupValue) => {
+    // Create group header
+    const groupHeader = document.createElement("tr");
+    groupHeader.className = "group-header";
+    groupHeader.innerHTML = `
+      <td colspan="5" class="group-cell">
+        <div class="flex items-center gap-2 p-2 bg-gray-100 cursor-pointer">
+          <span class="group-toggle">▼</span>
+          <span>${groupValue} (${groupRows.length} مورد)</span>
+        </div>
+      </td>
+    `;
+
+    // Add click handler for expand/collapse
+    groupHeader
+      .querySelector(".group-cell")
+      .addEventListener("click", function () {
+        const toggle = this.querySelector(".group-toggle");
+        const isExpanded = toggle.textContent === "▼";
+        toggle.textContent = isExpanded ? "▶" : "▼";
+
+        groupRows.forEach((row) => {
+          row.style.display = isExpanded ? "none" : "";
+        });
+      });
+
+    // Add group header and rows to tbody
+    tbody.appendChild(groupHeader);
+
+    groupRows.forEach((row) => {
+      tbody.appendChild(row);
+    });
+  });
+
+  // Add remove group button
+  addRemoveGroupButton();
+}
+
+// Add styles for group headers
+const style = document.createElement("style");
+style.textContent = `
+  .group-cell {
+    background-color: #f3f4f6;
+    font-weight: bold;
+  }
+  
+  .group-toggle {
+    display: inline-block;
+    width: 20px;
+    text-align: center;
+    transition: transform 0.2s;
+  }
+  
+  .group-cell:hover {
+    background-color: #e5e7eb;
+  }
+  
+  .remove-group-button {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    margin: 0 8px;
+    background-color: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .remove-group-button:hover {
+    background-color: #e5e7eb;
+  }
+`;
+document.head.appendChild(style);
+
 document.addEventListener("DOMContentLoaded", function () {
+  insertData(fakeData, fakeHeaders);
   createTable();
+  addGroupByMenuItem();
 });
